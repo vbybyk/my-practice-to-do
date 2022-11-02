@@ -7,7 +7,7 @@ const { Header } = Layout;
 export const HeaderApp: React.FC = () => {
   const items = [
     { label: <Link to={"/list"}>List</Link>, key: "/list" },
-    { label: <Link to={"/info"}>Info</Link>, key: "/info" },
+    { label: <Link to={"/favorite"}>Favorite</Link>, key: "/favorite" },
   ];
   return (
     <Layout>

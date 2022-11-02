@@ -1,11 +1,20 @@
 .list-container {
   margin: auto;
-  width: fit-content;
+  max-width: 1200px;
   text-align: center;
 }
 .favorite-container {
   margin: auto;
-  width: 70%;
+  max-width: 1200px;
+}
+.favorite-title {
+  margin-top: 25px;
+  text-align: center;
+}
+.favorite-page {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
 }
 .list-page {
   margin-top: 25px;
@@ -55,4 +64,7 @@
 }
 .ant-checkbox-wrapper {
   align-items: center;
+}
+.icons {
+  font-size: 20px;
 }

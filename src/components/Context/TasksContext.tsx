@@ -7,7 +7,7 @@ export const TasksContext = createContext(null as ITaskState | null);
 export const useTasksContext = () => {
   const context = useContext(TasksContext);
   if (!context) {
-    throw new Error("useBriefContext must be used within a BriefContextProvider");
+    throw new Error("useTasksContext must be used within a TasksContextProvider");
   }
   return context;
 };

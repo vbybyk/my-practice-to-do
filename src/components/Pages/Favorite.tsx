@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import { Layout, Checkbox } from "antd";
-import useTasks from "../Hooks/useTasks";
-import { DeleteFilled } from "@ant-design/icons";
+import { Layout, Checkbox, Space, Alert } from "antd";
+import { useTasksContext } from "../Context/TasksContext";
+import { DeleteOutlined, StarFilled, PlusOutlined } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
 import { ITask } from "../Interfaces/tasks";
 import "./list.scss";
@@ -9,39 +9,30 @@ import "./list.scss";
 const { Content } = Layout;
 
 export const Favorite: React.FC = () => {
-  const { favoriteTasks, getFavorite } = useTasks();
+  const { favoriteTasks, getFavorite, deleteFavorite, getFavoriteById } = useTasksContext();
   const [tasksArr, setTasksArr] = useState<ITask[]>([]);
+  const [alert, setAlert] = useState<boolean>(false);
 
   useEffect(() => {
     getFavorite();
   }, []);
 
   useEffect(() => {
-    setTasksArr(favoriteTasks);
+    favoriteTasks && setTasksArr(favoriteTasks);
   }, [favoriteTasks]);
 
-  console.log("favorite tasks", favoriteTasks);
-  console.log("tasks array", tasksArr);
-
-  const onHandleSubmit = (input: string) => {
-    const newTask: ITask = {
-      task: input,
-      id: Date.now(),
-      checked: false,
-      filter: "ACTIVE",
-    };
-    setTasksArr((prev) => [newTask, ...prev]);
+  const onHandleSubmit = (id: number) => {
+    getFavoriteById(id);
+    setAlert(!alert);
   };
 
   const onChecked = (e: CheckboxChangeEvent, id: number, filter: string) => {
     const checkedArr = tasksArr.map((item: ITask) => {
       if (item.id === id) {
-        console.log(filter);
         return { ...item, checked: !item.checked, filter: filter === "ACTIVE" ? "COMPLITED" : "ACTIVE" };
       }
       return item;
     });
-    console.log(checkedArr);
     setTasksArr(checkedArr);
   };
 
@@ -52,6 +43,7 @@ export const Favorite: React.FC = () => {
       }
     });
     setTasksArr(deletedArr);
+    deleteFavorite(id);
   };
 
   const tasksList = tasksArr.map(({ id, task, checked, filter }: ITask) => {
@@ -60,18 +52,32 @@ export const Favorite: React.FC = () => {
       <li className="list-item" key={id}>
         <Checkbox className="list-checkbox" onChange={(e) => onChecked(e, id, filter)} />
         <h2 className={clazz}>{task}</h2>
-        <DeleteFilled onClick={() => onDelete(id)} />
+        <div className="icons">
+          <Space size={36}>
+            <PlusOutlined onClick={() => onHandleSubmit(id)} />
+            <StarFilled style={{ color: "#f8de15" }} />
+            <DeleteOutlined onClick={() => onDelete(id)} />
+          </Space>
+        </div>
       </li>
     );
   });
 
-  const tasksListRender = tasksArr.length !== 0 ? tasksList : <h2>No Tasks</h2>;
-
   return (
     <Content className="favorite-container">
-      <div className="list-page">
+      {alert && (
+        <Alert
+          message="You succesfully added a Favorite task to the Tasks List"
+          banner
+          closable
+          type="success"
+          showIcon
+        />
+      )}
+      <h2 className="favorite-title">Your Favorite tasks</h2>
+      <div className="favorite-page">
         <div className="list-block">
-          <ul className="list-tasks">{tasksListRender}</ul>
+          <ul className="list-tasks">{tasksList}</ul>
         </div>
       </div>
     </Content>

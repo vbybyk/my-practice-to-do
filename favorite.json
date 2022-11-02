@@ -1,22 +1,32 @@
 {
   "favorite": [
     {
-      "task": "new favorite ",
-      "id": 1,
-      "cheched": false,
-      "filter": "ACTIVE"
+      "task": "To use React and Typescript",
+      "id": 1667371073310,
+      "checked": false,
+      "filter": "ACTIVE",
+      "favorite": false
     },
     {
-      "task": "new favorite 2 ",
-      "id": 2,
-      "cheched": false,
-      "filter": "ACTIVE"
+      "task": "To use useContext ",
+      "id": 1667371093863,
+      "checked": false,
+      "filter": "ACTIVE",
+      "favorite": false
     },
     {
-      "task": "new favorite 3 ",
-      "id": 3,
-      "cheched": false,
-      "filter": "ACTIVE"
+      "task": "To use local server for REST ",
+      "id": 1667371166254,
+      "checked": false,
+      "filter": "ACTIVE",
+      "favorite": false
+    },
+    {
+      "task": "To use React Router 6",
+      "id": 1667371235935,
+      "checked": false,
+      "filter": "ACTIVE",
+      "favorite": false
     }
   ]
 }

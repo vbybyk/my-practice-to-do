@@ -1,17 +1,12 @@
 import { useState } from "react";
-import { Layout, Button, Checkbox, Menu } from "antd";
-import { DeleteFilled } from "@ant-design/icons";
+import { useTasksContext } from "../Context/TasksContext";
+import { Layout, Button, Checkbox, Menu, Space } from "antd";
+import { DeleteOutlined, StarTwoTone, StarFilled } from "@ant-design/icons";
 import type { CheckboxChangeEvent } from "antd/es/checkbox";
+import { ITask } from "../Interfaces/tasks";
 import "./list.scss";
 
 const { Content } = Layout;
-
-interface Task {
-  task: string;
-  id: number;
-  checked: boolean;
-  filter: string;
-}
 
 const menuItems = [
   { label: "All", key: "ALL" },
@@ -20,30 +15,31 @@ const menuItems = [
 ];
 
 export const List: React.FC = () => {
+  const { tasksArr, setTasksArr, updateFavorite } = useTasksContext();
   const [input, setInput] = useState<string>("");
-  const [tasksArr, setTasksArr] = useState<Task[]>([]);
   const [filter, setFilter] = useState<string>("ALL");
 
   const onHandleSubmit = (input: string) => {
-    const newTask: Task = {
+    const newTask: ITask = {
       task: input,
       id: Date.now(),
       checked: false,
       filter: "ACTIVE",
+      favorite: false,
     };
-    setTasksArr((prev) => [newTask, ...prev]);
+    setTasksArr((prev: any) => [newTask, ...prev]);
     setInput("");
   };
 
   const onChecked = (e: CheckboxChangeEvent, id: number, filter: string) => {
-    const checkedArr = tasksArr.map((item: Task) => {
-      if (item.id === id) {
-        console.log(filter);
-        return { ...item, checked: !item.checked, filter: filter === "ACTIVE" ? "COMPLITED" : "ACTIVE" };
-      }
-      return item;
-    });
-    console.log(checkedArr);
+    const checkedArr =
+      tasksArr &&
+      tasksArr.map((item: ITask) => {
+        if (item.id === id) {
+          return { ...item, checked: !item.checked, filter: filter === "ACTIVE" ? "COMPLITED" : "ACTIVE" };
+        }
+        return item;
+      });
     setTasksArr(checkedArr);
   };
 
@@ -54,11 +50,13 @@ export const List: React.FC = () => {
   };
 
   const onDelete = (id: number) => {
-    const deletedArr = tasksArr.filter((item) => {
-      if (item.id !== id) {
-        return item;
-      }
-    });
+    const deletedArr =
+      tasksArr &&
+      tasksArr.filter((item) => {
+        if (item.id !== id) {
+          return item;
+        }
+      });
     setTasksArr(deletedArr);
   };
 
@@ -66,29 +64,58 @@ export const List: React.FC = () => {
     setFilter(key);
   };
 
-  const tasksListFiltered = tasksArr.filter((item: Task) => {
-    switch (filter) {
-      case "ALL":
+  const onToggleFavorite = (id: number) => {
+    const checkedArr =
+      tasksArr &&
+      tasksArr.map((item: ITask) => {
+        if (item.id === id) {
+          return { ...item, favorite: !item.favorite };
+        }
         return item;
-      case "ACTIVE":
-        return item.filter === "ACTIVE";
-      case "COMPLITED":
-        return item.filter === "COMPLITED";
-    }
-  });
+      });
+    const favItems: any = tasksArr?.filter((item: ITask) => {
+      if (item.id === id && !item.favorite) {
+        return item;
+      }
+    });
+    setTasksArr(checkedArr);
+    updateFavorite(favItems[0]);
+  };
 
-  const tasksList = tasksListFiltered.map(({ id, task, checked, filter }: Task) => {
+  const tasksListFiltered =
+    tasksArr &&
+    tasksArr.filter((item: ITask) => {
+      switch (filter) {
+        case "ALL":
+          return item;
+        case "ACTIVE":
+          return item.filter === "ACTIVE";
+        case "COMPLITED":
+          return item.filter === "COMPLITED";
+      }
+    });
+
+  const tasksList = tasksListFiltered?.map(({ id, task, checked, filter, favorite }: ITask) => {
     const clazz = checked ? "list-item__title-checked" : "list-item__title";
     return (
       <li className="list-item" key={id}>
-        <Checkbox className="list-checkbox" onChange={(e) => onChecked(e, id, filter)} />
+        <Checkbox className="list-checkbox" onChange={(e) => onChecked(e, id, filter)} defaultChecked={checked} />
         <h2 className={clazz}>{task}</h2>
-        <DeleteFilled onClick={() => onDelete(id)} />
+        <div className="icons">
+          <Space size={36}>
+            {favorite ? (
+              <StarFilled onClick={() => onToggleFavorite(id)} style={{ color: "#f8de15" }} />
+            ) : (
+              <StarTwoTone onClick={() => onToggleFavorite(id)} twoToneColor="#f8de15" />
+            )}
+            <DeleteOutlined onClick={() => onDelete(id)} />
+          </Space>
+        </div>
       </li>
     );
   });
 
-  const tasksListRender = tasksListFiltered.length !== 0 ? tasksList : <h2>No Tasks</h2>;
+  const tasksListRender = tasksListFiltered?.length !== 0 ? tasksList : <h2>No Tasks</h2>;
 
   return (
     <Content className="list-container">
